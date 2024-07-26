@@ -27,6 +27,21 @@ class TwitterApi {
 	fetch(cacheDuration) {
 		// returns promise
 		return EleventyFetch(this.getUrl(), {
+			duration: cacheDuration,
+			type: "json"
+		});
+	}
+}
+			duration: cacheDuration
+```
+		});
+	}
+}
+			duration: cacheDuration,
+			type: "json"
+		});
+	}
+}
 			duration: cacheDuration || "*",
 			type: "json",
 			fetchOptions: {
@@ -39,12 +54,30 @@ class TwitterApi {
 	}
 }
 
-async function TwitterApiFetchUserId(username, cacheDuration) {
-	// https://api.twitter.com/2/users/by?usernames=YOUR_USER_NAME&user.fields=created_at,description&expansions=pinned_tweet_id
-	let service = new TwitterApi("users/by");
+async function TwitterApiFetchUserId(username, cacheDuration = 60 * 60 * 24) {
 
+```
 	service.setParams({
+		"usernames": username,
+		"user.fields": "created_at,description",
+		"expansions": "pinned_tweet_id"
+	});
+
+	const response = await service.fetch({
+			duration: cacheDuration || "*",
+			type: "json",
+			fetchOptions: {
+				headers: {
+					"user-agent": "TweetBack Twitter Archive v1.0.0",
+					"authorization": `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
+				},
+			}
+		});
+	}
+}
+```
 		usernames: username,
+```
 	});
 
 	let {data} = await service.fetch(cacheDuration);

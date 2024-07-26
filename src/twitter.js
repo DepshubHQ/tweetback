@@ -26,8 +26,9 @@ const ELEVENTY_IMG_OPTIONS = {
 };
 
 const sentiment = new Sentiment();
-
 class Twitter {
+  // Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+}
 	isOriginalPost(tweet) {
 		return !this.isRetweet(tweet) && !this.isMention(tweet) && !this.isReply(tweet);
 	}
@@ -149,8 +150,7 @@ class Twitter {
 			targetUrl,
 		}
 	}
-
-	async getImage(remoteImageUrl, alt) {
+async getImage(remoteImageUrl, alt) {
 		// TODO the await use here on eleventyImg could be improved
 		let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS);
 		let imgRef = stats.jpeg[0];
@@ -158,10 +158,18 @@ class Twitter {
 	}
 
 	async saveVideo(remoteVideoUrl, localVideoPath) {
-		let videoBuffer = await eleventyFetch(remoteVideoUrl, ELEVENTY_VIDEO_OPTIONS);
+		try {
+			let videoBuffer = await eleventyFetch(remoteVideoUrl, ELEVENTY_VIDEO_OPTIONS);
 
-		if(!fs.existsSync(localVideoPath)) {
-			await fsp.writeFile(localVideoPath, videoBuffer);
+			if(!fs.existsSync(localVideoPath)) {
+				await fsp.writeFile(localVideoPath, videoBuffer);
+			}
+		} catch(e) {
+			if(e.code === "ERR_UNAVAILABLE") {
+				console.log(`Failed to save video ${remoteVideoUrl} due to error code ${e.code}`);
+			} else {
+				throw e;
+			}
 		}
 	}
 
@@ -196,19 +204,27 @@ class Twitter {
 				});
 			}
 		}
-
-		if( tweet.extended_entities ) {
-			for(let media of tweet.extended_entities.media ) {
+				if( media.type === "photo" ) {
+					medias.push(`<template data-island><a href="${media.media_url_https}" class="tweet-media tweet-media-photo"><img src="${media.media_url_https}" alt="${media.alt_text}" loading="lazy" decoding="async" width="375" height="197" class="tweet-media-photo-image"></a></template>`);
+				} else if( media.type === "video" || media.type === "animated_gif" ) {
+					medias.push(`<template data-island><a href="${media.media_url_https}" class="tweet-media tweet-media-video"><video src="${media.video_info.variants[0].url}" alt="${media.alt_text}" loop autoplay muted playsinline controls width="375" height="197" class="tweet-media-video-player"></video></a></template>`);
+				}
+			}
+		}
 				if(media.type === "photo") {
 					// remove photo URL
 					textReplacements.set(media.url, { html: "" });
-
+```
 					try {
 						let html = await this.getImage(media.media_url_https, media.alt_text || "");
 						medias.push(html);
 					} catch(e) {
-						console.log("Image request error", e.message);
-						medias.push(`<a href="${media.media_url_https}">${media.media_url_https}</a>`);
+						if(e.code === "ERR_UNAVAILABLE") {
+							console.log("Image request error", e.message);
+							medias.push(`<a href="${media.media_url_https}">${media.media_url_https}</a>`);
+						} else {
+							throw e;
+						}
 					}
 				} else if(media.type === "animated_gif" || media.type === "video") {
 					if(media.video_info && media.video_info.variants) {
@@ -219,7 +235,7 @@ class Twitter {
 						}).sort((a, b) => {
 							return parseInt(b.bitrate) - parseInt(a.bitrate);
 						});
-
+```
 						if(videoResults.length === 0) {
 							continue;
 						}
@@ -228,47 +244,7 @@ class Twitter {
 
 						try {
 							let videoUrl = remoteVideoUrl;
-							let posterStats = await eleventyImg(media.media_url_https, ELEVENTY_IMG_OPTIONS);
-							if(!this.isRetweet(tweet)) {
-								videoUrl = `/video/${tweet.id}.mp4`;
-
-								await this.saveVideo(remoteVideoUrl, `.${videoUrl}`)
-							}
-
-							let imgRef = posterStats.jpeg[0];
-							medias.push(`<video muted controls ${media.type === "animated_gif" ? "loop" : ""} src="${videoUrl}" poster="${imgRef.url}" class="tweet-media u-video"></video>`);
-						} catch(e) {
-							console.log("Video request error", e.message);
-							medias.push(`<a href="${remoteVideoUrl}">${remoteVideoUrl}</a>`);
-						}
-					}
-				}
-			}
-		}
-
-		return {
-			medias,
-			textReplacements,
-		}
-	}
-
-	async renderFullText(tweet) {
-		let text = tweet.full_text;
-
-		// Markdown
-		// replace `*` with <code>*</code>
-		text = text.replace(/\`([^\`]*)\`/g, "<code>$1</code>");
-
-		let {medias, textReplacements} = await this.getMedia(tweet);
-
-		for(let [key, {regex, html}] of textReplacements) {
-			text = text.replace(regex || key, html);
-		}
-
-		if(medias.length) {
-			text += `<is-land on:visible><div class="tweet-medias">${medias.join("")}</div></is-land>`;
-		}
-
+```
 		return text;
 	}
 

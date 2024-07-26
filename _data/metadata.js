@@ -4,6 +4,4 @@ let data = {
 	homeUrl: "https://www.11ty.dev/",
 };
 
-data.avatar = `https://v1.indieweb-avatar.11ty.dev/${encodeURIComponent(data.homeUrl)}/`;
-
-module.exports = data;
+export default data;

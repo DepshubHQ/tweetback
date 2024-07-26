@@ -1,6 +1,5 @@
-const numeral = require("numeral");
-const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
-const { execSync } = require('child_process')
+import numeral from "numeral";
+import { EleventyHtmlBasePlugin } from "@11ty/eleventy";
 
 module.exports = function(eleventyConfig) {
 	eleventyConfig.ignores.add("README.md");
@@ -12,7 +11,7 @@ module.exports = function(eleventyConfig) {
 	eleventyConfig.addPassthroughCopy("video/");
 
 	eleventyConfig.addPassthroughCopy({
-		"node_modules/@11ty/is-land/is-land.js": "assets/is-land.js",
+		"node_modules/dist/_11ty/is-land/is-land.js": "assets/is-land.js",
 	});
 
 	eleventyConfig.addJavaScriptFunction("avatarUrl", function avatarUrl(url) {
@@ -22,13 +21,34 @@ module.exports = function(eleventyConfig) {
 		return `https://v1.indieweb-avatar.11ty.dev/${encodeURIComponent(url)}/`;
 	});
 
-	eleventyConfig.addJavaScriptFunction("renderNumber", function renderNumber(num) {
+	eleventyConfig.addJavaScriptFunction("formatNumber", function formatNumber(num) {
 		if(typeof num === "string") {
 			num = parseInt(num, 10);
 		}
 		return numeral(num).format("0,0");
 	});
+};
+};
+};
 
+	eleventyConfig.addPlugin(require("@11ty/eleventy-plugin-experimental-worklet"), {
+		enableExperimentalWorkletSupport: true,
+	});
+};
+};
+};
+};
+};
+};
+};
+};
+};
+};
+	});
+};
+	});
+};
+	});
 	eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
 
 	// pagefind search plugin

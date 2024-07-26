@@ -1,7 +1,7 @@
-const dataSource = require("../src/DataSource");
-const metadata = require("../_data/metadata.js");
+import dataSource from "../src/DataSource";
+import metadata from "../_data/metadata.js";
 
-module.exports = async function(data) {
+export default async function(data) {
 	let titleTweetNumberStr = "";
 	if(data.page.fileSlug === "tweet-pages") {
 		titleTweetNumberStr = `—№ ${this.renderNumber(data.pagination.hrefs.length - data.pagination.pageNumber)}`;
@@ -11,7 +11,7 @@ module.exports = async function(data) {
 
 	let navHtml = "";
 	if(data.page.fileSlug === "tweet-pages" || data.page.fileSlug === "newest") {
-		let newestHref = "/newest/";
+		let newestHref = "/dist/newest/";
 		let previousHref = data.pagination.previousPageHref;
 		let nextHref = data.pagination.nextPageHref;
 
@@ -28,6 +28,89 @@ module.exports = async function(data) {
 			<li>${previousHref ? `<a href="${previousHref}">` : ""}⇠ Newer<span class="sr-only"> Tweet</span>${previousHref ? `</a>` : ""}</li>
 			<li>${nextHref ? `<a href="${nextHref}">` : ""}Older<span class="sr-only"> Tweet</span> ⇢${nextHref ? `</a>` : ""}</li>
 		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml
+	};
+};
+		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml: navHtml
+	};
+};
+		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml: navHtml
+	};
+};
+		</ul>`;
+```
+	}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml
+	};
+};
+		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml
+	};
+};
+		</ul>`;
+}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml,
+	};
+};
+		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml
+```
+	};
+};
+		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title}${titleTweetNumberStr}`
+	};
+};
+```
+		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title}${titleTweetNumberStr}`,
+		navHtml: navHtml
+	};
+};
+	};
+};
+		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml: navHtml
+	};
+};
 	}
 
 	let meta_description = `A read-only indieweb self-hosted archive of${ data.pagination && data.pagination.hrefs && data.pagination.hrefs.length ? ` all ${data.pagination.hrefs.length} of` : ""} ${data.metadata.username}’s tweets.`;

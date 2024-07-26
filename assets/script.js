@@ -9,5 +9,4 @@ function fallbackMedia(node) {
 	var toReplace = node.tagName === "VIDEO" ? node : node.parentNode;
 	toReplace.parentNode.replaceChild(link, toReplace);
 }
-
 window.fallbackMedia = fallbackMedia;

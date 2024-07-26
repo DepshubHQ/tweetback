@@ -1,5 +1,5 @@
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./database/tweet.db");
+const sqlite = require("sqlite").verbose();
+const db = new sqlite.Database("./database/tweet.db");
 
 class DataSource {
 	constructor() {
@@ -28,6 +28,9 @@ class DataSource {
 		}
 		// TODO get this from cache?
 
+	}
+}
+
 		return new Promise((resolve, reject) => {
 			db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: id }, (err, row) => {
 				if(err) {
@@ -55,6 +58,7 @@ class DataSource {
 			obj.truncated = false;
 			obj.retweet_count = json.public_metrics.retweet_count;
 			obj.favorite_count = json.public_metrics.like_count;
+```
 			obj.quote_count = json.public_metrics.quote_count;
 			obj.reply_count = json.public_metrics.reply_count;
 			obj.in_reply_to_status_id = replyTweetId;
@@ -80,10 +84,12 @@ class DataSource {
 			}
 
 			// Normalized before inserted in to the DB (see tweet-to-db.js)
-			obj.extended_entities = json.extended_entities;
+			// obj.extended_entities = json.extended_entities;
 
 			return obj;
-		}
+```
+```
+```
 
 		json.date = new Date(json.created_at);
 		// should always be a string

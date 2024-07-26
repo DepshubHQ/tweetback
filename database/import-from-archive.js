@@ -1,7 +1,13 @@
 require('dotenv').config();
-const { checkInDatabase, logTweetCount, saveToDatabaseApiV1, createTable } = require("./tweet-to-db");
-const shouldFilterOutCircleTweets = process.argv.includes('removecircletweets');
+const { checkInDatabase, logTweetCount, saveToDatabaseApiV2, createTable } = require("./dist/tweet-to-db");
+const shouldFilterOutCircleTweets = process.argv.includes('--filter-out-circle-tweets');
 const tweets = require("./tweets.js");
+
+if (shouldFilterOutCircleTweets) {
+	console.log("The `removecircletweets` argument is no longer supported. Please use the `--filter-out-circle-tweets` argument instead.");
+	return;
+}
+
 let circleTweets;
 
 if (shouldFilterOutCircleTweets) {
@@ -22,11 +28,18 @@ async function retrieveTweets() {
 
 	for(let {tweet} of tweets ) {
 		checkInDatabase(tweet).then((tweet) => {
+```js
 			if(tweet === false) {
 				existingRecordsFound++;
 			} else if (shouldFilterOutCircleTweets && tweetIsForCircles(tweet)) {
 				circleTweets++;
 				console.log( {circleTweets} );
+			} else {
+				saveToDatabaseApiV2(tweet);
+			}
+		});
+	}
+}
 			} else {
 				missingTweets++;
 				saveToDatabaseApiV1(tweet);
@@ -34,17 +47,18 @@ async function retrieveTweets() {
 				console.log( {existingRecordsFound, missingTweets} );
 				logTweetCount();
 			}
+```
 		});
+```
 	}
 }
 
 (async function() {
 	try {
-		createTable();
+		await createTable();
 
 		await retrieveTweets();
 	} catch(e) {
 		console.log( "ERROR", e );
 	}
 })();
-

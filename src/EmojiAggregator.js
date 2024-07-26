@@ -6,29 +6,42 @@ function EmojiAggregator() {
 	this.emojiTweetCount = 0;
 }
 
-EmojiAggregator.prototype.addGlyph = function( glyph, tweet ) {
-	var key = null;
-	for( var j = 0, k = this.emoji.length; j < k; j++ ) {
-		if( this.emoji[ j ].glyph === glyph ) {
+EmojiAggregator.prototype.addGlyph = function(glyph, tweet) {
+	let key = null;
+	for (let j = 0, k = this.emoji.length; j < k; j++) {
+		if (this.emoji[j].glyph === glyph) {
 			key = j;
 			break;
 		}
 	}
 
-	if( key === null ) {
-		var tweets = {};
-		tweets[ tweet.id ] = tweet;
-		this.emoji.push( { glyph: glyph, count: 1, tweetcount: 1, tweets: tweets } );
+	if (key === null) {
+		const tweets = {};
+		tweets[tweet.id] = tweet;
+		this.emoji.push({ glyph, count: 1, tweetcount: 1, tweets });
 	} else {
-		this.emoji[ key ].count++;
+		this.emoji[key].count++;
 
-		if( this.emoji[ key ].tweets[ tweet.id ] ) {
+		if (this.emoji[key].tweets[tweet.id]) {
 			// do nothing
 		} else {
-			this.emoji[ key ].tweetcount++;
-			this.emoji[ key ].tweets[ tweet.id ] = tweet;
+			this.emoji[key].tweetcount++;
+			this.emoji[key].tweets[tweet.id] = tweet;
 		}
 	}
+};
+		}
+}
+
+	if (this.emoji[key].tweetcount > this.emojiTweetCount) {
+		this.emojiTweetCount = this.emoji[key].tweetcount;
+	}
+};
+		}
+}
+};
+		}
+}
 };
 
 EmojiAggregator.prototype.add = function( tweet ) {
@@ -45,18 +58,663 @@ EmojiAggregator.prototype.add = function( tweet ) {
 
 EmojiAggregator.findEmoji = function( text ) {
 	var match = text.match( emojiRegex() );
-	var emoji = [];
-	if( match ) {
-		for( var j = 0, k = match.length; j < k; j++ ) {
+```js
+			if(match[i].length > 1) {
+				emoji.push(match[i]);
+			}
+		}
+	}
+	return emoji;
+};
 			// flags are encoded as two different points here
 			if( j + 1 < k && code( match [ j ] + match[ j + 1 ] ) ) {
 				emoji.push( match [ j ] + match[ j + 1 ] );
 				j++;
+```
 			} else {
 				emoji.push( match [ j ] );
 			}
+```
 		}
 	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			}
+		}
+	}
+	return emoji;
+};
+			
 	return emoji;
 };
 
@@ -65,6 +723,8 @@ EmojiAggregator.prototype.getTweetCount = function() {
 };
 
 EmojiAggregator.prototype.getSorted = function() {
+	return this.sorted;
+};
 	return this.emoji.slice().sort(function( a, b ) {
 		return b.count - a.count;
 	});
