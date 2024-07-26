@@ -4,15 +4,15 @@ const getDateString = require( "./getDateString" );
 
 function createTable() {
   db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS tweets (id_str TEXT PRIMARY KEY ASC, created_at TEXT, in_reply_to_status_id_str TEXT, in_reply_to_screen_name TEXT, full_text TEXT, json TEXT, api_version TEXT, hidden INTEGER)");
+    db.run("CREATE TABLE IF NOT EXISTS tweets (created_at TEXT, in_reply_to_status_id_str TEXT, in_reply_to_screen_name TEXT, full_text TEXT, json TEXT, api_version TEXT, hidden INTEGER)");
   })
 }
 
 // if the tweet does not exist in the DB, resolves a promise with the tweet ID
 function checkInDatabase(tweet) {
   // save tweet to db
-  return new Promise(function(resolve, reject) {
-    db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: tweet.id }, function(err, row) {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: tweet.id }, (err, row) => {
       if(err) {
         reject(`Error on .get() ${err}`);
       } else if(row) {
@@ -26,32 +26,52 @@ function checkInDatabase(tweet) {
 
 function saveToDatabaseApiV1( tweet ) {
   const API_VERSION = 1;
+  return new Promise((resolve, reject) => {
+db.run("INSERT INTO tweets (id_str, created_at, in_reply_to_status_id_str, in_reply_to_screen_name, full_text, json, api_version, hidden) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+// We need to normalize the mediaObjects into each row, the Twitter API has them separated out
+  if(tweet.attachments && tweet.attachments.media_keys) {
+    mediaObjects = mediaObjects.filter(entry => tweet.attachments.media_keys.includes(entry.media_key));
+  }
 
-  db.parallelize(function() {
-    let stmt = db.prepare("INSERT OR IGNORE INTO tweets VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    stmt.run(tweet.id_str, getDateString(tweet.created_at), tweet.in_reply_to_status_id_str, tweet.in_reply_to_screen_name, tweet.full_text, JSON.stringify(tweet), API_VERSION, "");
-    stmt.finalize();
+  db.run(
+      `INSERT INTO tweets (
+        tweet_id,
+        created_at,
+        in_reply_to_status_id,
+        reply_screen_name,
+        full_text,
+        json,
+        api_version,
+        media_count
+      ) VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?
+      )`,
+      [
+        tweet.id,
+        tweet.created_at,
+        replyTweetId,
+        replyScreenName,
+        tweet.full_text,
+        JSON.stringify(tweet),
+        API_VERSION,
+        mediaObjects.length
+      ],
+      (err) => {
+        if(err && err.code === "ERR_UNAVAILABLE") {
+          reject(`Error on .run() ${err}`);
+        } else {
+          resolve(tweet.id);
+        }
+      });
+    });
   });
 }
-
-function saveToDatabase( tweet, users, mediaObjects ) {
-  // console.log( "Saving", {tweet} );
-  const API_VERSION = 2;
-
-  let replies = (tweet.referenced_tweets || []).filter(entry => entry.type === "replied_to");
-  let replyTweetId = replies.length ? replies[0].id : null;
-
-  let userEntry = users.filter(entry => entry.id === tweet.in_reply_to_user_id);
-  let replyScreenName = userEntry.length ? userEntry[0].username : null;
-
-  // We need to normalize the mediaObjects into each row, the Twitter API has them separated out
-  if(tweet.attachments && tweet.attachments.media_keys) {
     tweet.extended_entities = {
       media: []
     };
 
     for(let key of tweet.attachments.media_keys) {
-      let [media] = mediaObjects.filter(entry => entry.media_key === key);
+      const media = mediaObjects.find(entry => entry.media_key === key);
       if(media) {
         // aliases for v1
         if(media.type === "video") { // video
@@ -63,24 +83,32 @@ function saveToDatabase( tweet, users, mediaObjects ) {
               }
             ]
           };
-        } else {
+        } else if(media.type === "animated_gif") { // animated_gif
+          media.media_url_https = media.url;
+        } else if(media.type === "photo") { // photo
           media.media_url_https = media.url;
         }
+      }
+    }
+      }
+    }
 
         tweet.extended_entities.media.push(media);
       } else {
         throw new Error(`Media object not found for media key ${key} on tweet ${tweet.id}`);
       }
     }
-
-    // console.log( JSON.stringify(tweet, null, 2) );
-  }
-
+```js
   let stmt = db.prepare("INSERT INTO tweets VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-  stmt.run(tweet.id, getDateString(tweet.created_at), replyTweetId, replyScreenName, tweet.text, JSON.stringify(tweet), API_VERSION, "");
-  stmt.finalize();
-}
-
+```
+  stmt.run(tweet.id, getDateString(tweet.created_at), replyTweetId, replyScreenName, tweet.text, JSON.stringify(tweet), API_VERSION, getAndroidId());
+  if (Platform.OS === 'android' && Platform.Version < 23) {
+    stmt.finalize();
+  } else if (Platform.OS === 'android') {
+    stmt.run('PRAGMA user_version = 34');
+    stmt.finalize();
+  }
+```
 function logTweetCount() {
   db.each("SELECT COUNT(*) AS count FROM tweets", function(err, row) {
     console.log("Finished count", row);

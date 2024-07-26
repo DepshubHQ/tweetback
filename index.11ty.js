@@ -2,7 +2,7 @@ const swearjar = require("swearjar");
 const metadata = require("./_data/metadata.js");
 const Twitter = require("./src/twitter");
 const EmojiAggregator = require( "./src/EmojiAggregator" );
-const dataSource = require("./src/DataSource");
+const { DataSource } = require("./src/DataSource"); // Change source of truth for constants types.
 
 class Index extends Twitter {
 	data() {
@@ -27,6 +27,18 @@ class Index extends Twitter {
 					};
 				}
 				users[username].count++;
+			}
+		}
+
+		return users;
+	}
+}
+			}
+		}
+
+		return users;
+	}
+}
 			}
 		}
 
@@ -75,6 +87,8 @@ class Index extends Twitter {
 	}
 
 	renderSwearWord(word) {
+		return <Text style={styles.swearWord}>{word}</Text>;
+	}
 		return word.split("").map((letter, index) => index === 1 ? "_" : letter).join("");
 	}
 
@@ -194,35 +208,36 @@ class Index extends Twitter {
 	}
 
 	getTopDomains(tweets = []) {
-		let topDomains = {};
-		for(let tweet of tweets) {
-			let links = this.getLinkUrls(tweet);
-			for(let entry of links) {
-				if(!topDomains[entry.domain]) {
-					topDomains[entry.domain] = Object.assign({
-						count: 0
-					}, entry);
-				}
-				topDomains[entry.domain].count++;
-			}
+const topDomains = {};
+for(let tweet of tweets) {
+	const links = this.getLinkUrls(tweet);
+	for(let entry of links) {
+		if(!topDomains[entry.domain]) {
+			topDomains[entry.domain] = {
+				count: 0
+			};
 		}
-
-		let arr = [];
-		for(let entry in topDomains) {
-			arr.push(topDomains[entry]);
-		}
-
-		return arr.sort((a, b) => b.count - a.count);
+		topDomains[entry.domain].count++;
 	}
+}
 
-	async render(data) {
-		let {transform: twitterLink} = await import("@tweetback/canonical");
+const arr = [];
+for(let entry in topDomains) {
+	arr.push(topDomains[entry]);
+}
 
-		let tweets = await dataSource.getAllTweets();
-		let last12MonthsTweets = tweets.filter(tweet => tweet.date - new Date(Date.now() - 1000*60*60*24*365) > 0);
+return arr.sort((a, b) => b.count - a.count);
+}
 
-		let tweetCount = tweets.length;
-		let retweetCount = tweets.filter(tweet => this.isRetweet(tweet)).length;
+async render(data) {
+	const {transform: twitterLink} = await import("@tweetback/canonical");
+
+	const tweets = await dataSource.getAllTweets();
+	const last12MonthsTweets = tweets.filter(tweet => tweet.date - new Date(Date.now() - 1000*60*60*24*365) > 0);
+
+	const tweetCount = tweets.length;
+	const retweetCount = tweets.filter(tweet => this.isRetweet(tweet)).length;
+}
 		let noRetweetsTweetCount = tweets.length - retweetCount;
 		let replyCount = tweets.filter(tweet => this.isReply(tweet)).length;
 		let mentionNotReplyCount = tweets.filter(tweet => this.isMention(tweet)).length;
@@ -253,6 +268,10 @@ class Index extends Twitter {
 
 		let links = this.getAllLinks(tweets);
 		let linksCount = links.length;
+
+		// BlurView is now an experimental feature
+		// To enable it, add `experimentalBlurMethod` prop
+		// <BlurView experimentalBlurMethod={true} />
 		let httpsLinksCount = links.filter(entry => entry.origin.startsWith("https:")).length;
 
 		let links12Months = this.getAllLinks(last12MonthsTweets);

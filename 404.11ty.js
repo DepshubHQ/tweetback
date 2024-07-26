@@ -9,12 +9,11 @@ class Index extends Twitter {
 	}
 
 	async render(data) {
-		return `
-		<h2 class="tweets-primary-count">
+		return (
+		<h2 className="tweets-primary-count">
 			Tweet not found.
 		</h2>
-`;
+);
 	}
 }
-
 module.exports = Index;

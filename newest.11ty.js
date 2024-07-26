@@ -23,5 +23,4 @@ class NewestTweet extends Twitter {
 		return await this.renderTweetThread(data.tweet, { hidePermalink: false });
 	}
 }
-
 module.exports = NewestTweet;
