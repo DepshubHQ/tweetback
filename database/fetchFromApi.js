@@ -50,14 +50,18 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 			"in_reply_to_user_id",
 			"lang",
 			"public_metrics",
+			"organic_metrics",
 			// "non_public_metrics",
-			// "organic_metrics",
 			// "promoted_metrics",
 			"possibly_sensitive",
 			"referenced_tweets",
 			"reply_settings",
 			"source",
 			"text",
+			"non_public_metrics",
+			"organic_metrics",
+			"promoted_metrics"
+		].join(","),
 			"withheld"
 		].join(",")
 	};
@@ -115,4 +119,3 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 		console.log( "ERROR", e );
 	}
 })();
-
