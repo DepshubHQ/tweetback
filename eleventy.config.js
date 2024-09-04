@@ -28,12 +28,11 @@ module.exports = function(eleventyConfig) {
 		}
 		return numeral(num).format("0,0");
 	});
-
 	eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
 
 	// pagefind search plugin
 	eleventyConfig.on('eleventy.after', () => {
 		console.log('[pagefind] Creating search index.');
-		execSync(`npx pagefind --source _site --glob \"[0-9]*/**/*.html\"`, { encoding: 'utf-8' });
+		execSync(`npx pagefind --source _site --output pagefind --glob \"[0-9]*/**/*.html\"`, { encoding: 'utf-8' });
   });
 };

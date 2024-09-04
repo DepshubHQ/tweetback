@@ -58,6 +58,8 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 			"reply_settings",
 			"source",
 			"text",
+			"data-pagefind-body"
+		].join(","),
 			"withheld"
 		].join(",")
 	};
@@ -115,4 +117,3 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 		console.log( "ERROR", e );
 	}
 })();
-

@@ -28,6 +28,451 @@ const ELEVENTY_IMG_OPTIONS = {
 const sentiment = new Sentiment();
 
 class Twitter {
+	constructor(site) {
+		this.site = site;
+		this.tweets = [];
+		this.sentiment = sentiment;
+		this.dataSource = dataSource;
+		this.metadata = metadata;
+		this.eleventyImg = eleventyImg;
+		this.eleventyFetch = eleventyFetch;
+		this.fs = fs;
+		this.fsp = fsp;
+		this.escapeAttribute = escapeAttribute;
+		this.ELEVENTY_VIDEO_OPTIONS = ELEVENTY_VIDEO_OPTIONS;
+		this.ELEVENTY_IMG_OPTIONS = ELEVENTY_IMG_OPTIONS;
+	}
+	async getTweets() {
+		if (this.tweets.length === 0) {
+			this.tweets = await this.dataSource.getTweets(this.site);
+		}
+		return this.tweets;
+	}
+	async getTweetSentiment(tweet) {
+		const sentiment = this.sentiment.analyze(tweet.text);
+		return sentiment;
+	}
+	async getTweetSentimentScore(tweet) {
+		const sentiment = await this.getTweetSentiment(tweet);
+		return sentiment.score;
+	}
+	async getTweetSentimentComparison(tweet) {
+		const sentiment = await this.getTweetSentiment(tweet);
+		return sentiment.comparative;
+	}
+	async getTweetSentimentWords(tweet) {
+		const sentiment = await this.getTweetSentiment(tweet);
+		return sentiment.words;
+	}
+	async getTweetSentimentData(tweet) {
+		const sentiment = await this.getTweetSentiment(tweet);
+		return {
+			score: sentiment.score,
+			comparative: sentiment.comparative,
+			words: sentiment.words
+		};
+	}
+	async getTweetsWithSentiment() {
+		const tweets = await this.getTweets();
+		const tweetsWithSentiment = [];
+		for (const tweet of tweets) {
+			const sentimentData = await this.getTweetSentimentData(tweet);
+			tweetsWithSentiment.push({
+				...tweet,
+				sentiment: sentimentData
+			});
+		}
+		return tweetsWithSentiment;
+	}
+	async getTweetsWithSentimentAndMetadata() {
+		const tweets = await this.getTweetsWithSentiment();
+		const tweetsWithSentimentAndMetadata = [];
+		for (const tweet of tweets) {
+			const metadata = this.metadata.getTweetMetadata(tweet);
+			tweetsWithSentimentAndMetadata.push({
+				...tweet,
+				metadata: metadata
+			});
+		}
+		return tweetsWithSentimentAndMetadata;
+	}
+	async getTweetsWithSentimentAndMetadataAndImages() {
+		const tweets = await this.getTweetsWithSentimentAndMetadata();
+		const tweetsWithSentimentAndMetadataAndImages = [];
+		for (const tweet of tweets) {
+			const images = await this.getTweetImages(tweet);
+			tweetsWithSentimentAndMetadataAndImages.push({
+				...tweet,
+				images: images
+			});
+		}
+		return tweetsWithSentimentAndMetadataAndImages;
+	}
+	async getTweetImages(tweet) {
+		const images = [];
+		if (tweet.entities.media) {
+			for (const media of tweet.entities.media) {
+				if (media.type === "photo") {
+					const image = await this.getImage(media.media_url_https);
+					images.push(image);
+				}
+			}
+		}
+		return images;
+	}
+	async getImage(url) {
+		const image = await this.eleventyImg(url, this.ELEVENTY_IMG_OPTIONS);
+		return image;
+	}
+	async getTweetVideo(tweet) {
+		if (tweet.entities.media) {
+			for (const media of tweet.entities.media) {
+				if (media.type === "video") {
+					const video = await this.getVideo(media.media_url_https);
+					return video;
+				}
+			}
+		}
+		return null;
+	}
+	async getVideo(url) {
+		const video = await this.eleventyImg(url, this.ELEVENTY_VIDEO_OPTIONS);
+		return video;
+	}
+	async getTweetText(tweet) {
+		return tweet.text;
+	}
+	async getTweetCreatedAt(tweet) {
+		return tweet.created_at;
+	}
+	async getTweetId(tweet) {
+		return tweet.id_str;
+	}
+	async getTweetUrl(tweet) {
+		return `https://twitter.com/${this.site}/status/${tweet.id_str}`;
+	}
+	async getTweetAuthor(tweet) {
+		return tweet.user.screen_name;
+	}
+	async getTweetAuthorName(tweet) {
+		return tweet.user.name;
+	}
+	async getTweetAuthorProfileImage(tweet) {
+		return tweet.user.profile_image_url_https;
+	}
+	async getTweetAuthorDescription(tweet) {
+		return tweet.user.description;
+	}
+	async getTweetAuthorLocation(tweet) {
+		return tweet.user.location;
+	}
+	async getTweetAuthorUrl(tweet) {
+		return tweet.user.url;
+	}
+	async getTweetAuthorFollowersCount(tweet) {
+		return tweet.user.followers_count;
+	}
+	async getTweetAuthorFriendsCount(tweet) {
+		return tweet.user.friends_count;
+	}
+	async getTweetAuthorStatusesCount(tweet) {
+		return tweet.user.statuses_count;
+	}
+	async getTweetAuthorCreatedAt(tweet) {
+		return tweet.user.created_at;
+	}
+	async getTweetAuthorProtected(tweet) {
+		return tweet.user.protected;
+	}
+	async getTweetAuthorVerified(tweet) {
+		return tweet.user.verified;
+	}
+	async getTweetAuthorWithheldInCountries(tweet) {
+		return tweet.user.withheld_in_countries;
+	}
+	async getTweetAuthorWithheldScope(tweet) {
+		return tweet.user.withheld_scope;
+	}
+	async getTweetAuthorLang(tweet) {
+		return tweet.user.lang;
+	}
+	async getTweetAuthorProfileBackgroundColor(tweet) {
+		return tweet.user.profile_background_color;
+	}
+	async getTweetAuthorProfileBackgroundImage(tweet) {
+		return tweet.user.profile_background_image_url_https;
+	}
+	async getTweetAuthorProfileBackgroundTile(tweet) {
+		return tweet.user.profile_background_tile;
+	}
+	async getTweetAuthorProfileTextColor(tweet) {
+		return tweet.user.profile_text_color;
+	}
+	async getTweetAuthorProfileLinkColor(tweet) {
+		return tweet.user.profile_link_color;
+	}
+	async getTweetAuthorProfileSidebarBorderColor(tweet) {
+		return tweet.user.profile_sidebar_border_color;
+	}
+	async getTweetAuthorProfileSidebarFillColor(tweet) {
+		return tweet.user.profile_sidebar_fill_color;
+	}
+	async getTweetAuthorProfileBannerUrl(tweet) {
+		return tweet.user.profile_banner_url;
+	}
+	async getTweetAuthorDefaultProfile(tweet) {
+		return tweet.user.default_profile;
+	}
+	async getTweetAuthorDefaultProfileImage(tweet) {
+		return tweet.user.default_profile_image;
+	}
+	async getTweetAuthorFollowing(tweet) {
+		return tweet.user.following;
+	}
+	async getTweetAuthorFollowRequestSent(tweet) {
+		return tweet.user.follow_request_sent;
+	}
+	async getTweetAuthorNotifications(tweet) {
+		return tweet.user.notifications;
+	}
+	async getTweetAuthorTranslatorType(tweet) {
+		return tweet.user.translator_type;
+	}
+	async getTweetAuthorWithheldInCountries(tweet) {
+		return tweet.user.withheld_in_countries;
+	}
+	async getTweetAuthorWithheldScope(tweet) {
+		return tweet.user.withheld_scope;
+	}
+	async getTweetAuthorIsTranslator(tweet) {
+		return tweet.user.is_translator;
+	}
+	async getTweetAuthorHasExtendedProfile(tweet) {
+		return tweet.user.has_extended_profile;
+	}
+	async getTweetAuthorEntities(tweet) {
+		return tweet.user.entities;
+	}
+	async getTweetAuthorDescriptionEntities(tweet) {
+		return tweet.user.entities.description;
+	}
+	async getTweetAuthorUrlEntities(tweet) {
+		return tweet.user.entities.url;
+	}
+	async getTweetAuthorDescriptionUrls(tweet) {
+		const urls = [];
+		if (tweet.user.entities.description.urls) {
+			for (const url of tweet.user.entities.description.urls) {
+				urls.push(url.expanded_url);
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorUrlUrls(tweet) {
+		const urls = [];
+		if (tweet.user.entities.url.urls) {
+			for (const url of tweet.user.entities.url.urls) {
+				urls.push(url.expanded_url);
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorDescriptionUrlsWithText(tweet) {
+		const urls = [];
+		if (tweet.user.entities.description.urls) {
+			for (const url of tweet.user.entities.description.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorUrlUrlsWithText(tweet) {
+		const urls = [];
+		if (tweet.user.entities.url.urls) {
+			for (const url of tweet.user.entities.url.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorDescriptionUrlsWithTextAndTitle(tweet) {
+		const urls = [];
+		if (tweet.user.entities.description.urls) {
+			for (const url of tweet.user.entities.description.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorUrlUrlsWithTextAndTitle(tweet) {
+		const urls = [];
+		if (tweet.user.entities.url.urls) {
+			for (const url of tweet.user.entities.url.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorDescriptionUrlsWithTextAndTitleAndDescription(tweet) {
+		const urls = [];
+		if (tweet.user.entities.description.urls) {
+			for (const url of tweet.user.entities.description.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorUrlUrlsWithTextAndTitleAndDescription(tweet) {
+		const urls = [];
+		if (tweet.user.entities.url.urls) {
+			for (const url of tweet.user.entities.url.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorDescriptionUrlsWithTextAndTitleAndDescriptionAndImage(tweet) {
+		const urls = [];
+		if (tweet.user.entities.description.urls) {
+			for (const url of tweet.user.entities.description.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description,
+					image: url.image
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorUrlUrlsWithTextAndTitleAndDescriptionAndImage(tweet) {
+		const urls = [];
+		if (tweet.user.entities.url.urls) {
+			for (const url of tweet.user.entities.url.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description,
+					image: url.image
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorDescriptionUrlsWithTextAndTitleAndDescriptionAndImageAndProvider(tweet) {
+		const urls = [];
+		if (tweet.user.entities.description.urls) {
+			for (const url of tweet.user.entities.description.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description,
+					image: url.image,
+					provider: url.provider
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorUrlUrlsWithTextAndTitleAndDescriptionAndImageAndProvider(tweet) {
+		const urls = [];
+		if (tweet.user.entities.url.urls) {
+			for (const url of tweet.user.entities.url.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description,
+					image: url.image,
+					provider: url.provider
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorDescriptionUrlsWithTextAndTitleAndDescriptionAndImageAndProviderAndProviderUrl(tweet) {
+		const urls = [];
+		if (tweet.user.entities.description.urls) {
+			for (const url of tweet.user.entities.description.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description,
+					image: url.image,
+					provider: url.provider,
+					providerUrl: url.provider_url
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorUrlUrlsWithTextAndTitleAndDescriptionAndImageAndProviderAndProviderUrl(tweet) {
+		const urls = [];
+		if (tweet.user.entities.url.urls) {
+			for (const url of tweet.user.entities.url.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description,
+					image: url.image,
+					provider: url.provider,
+					providerUrl: url.provider_url
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorDescriptionUrlsWithTextAndTitleAndDescriptionAndImageAndProviderAndProviderUrlAndProviderScreenName(tweet) {
+		const urls = [];
+		if (tweet.user.entities.description.urls) {
+			for (const url of tweet.user.entities.description.urls) {
+				urls.push({
+					url: url.expanded_url,
+					text: url.display_url,
+					title: url.title,
+					description: url.description,
+					image: url.image,
+					provider: url.provider,
+					providerUrl: url.provider_url,
+					providerScreenName: url.provider_screen_name
+				});
+			}
+		}
+		return urls;
+	}
+	async getTweetAuthorUrlUrlsWithTextAndTitleAndDescriptionAndImageAndProviderAndProviderUrlAndProviderScreenName(tweet) {
+		const urls = [];
+		if (tweet.user.entities.url.urls) {
+			for (const url of tweet.user.entities.url.urls
 	isOriginalPost(tweet) {
 		return !this.isRetweet(tweet) && !this.isMention(tweet) && !this.isReply(tweet);
 	}
