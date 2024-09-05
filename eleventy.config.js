@@ -28,6 +28,7 @@ module.exports = function(eleventyConfig) {
 		}
 		return numeral(num).format("0,0");
 	});
+};
 
 	eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
 
