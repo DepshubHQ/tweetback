@@ -1,8 +1,8 @@
 const swearjar = require("swearjar");
 const metadata = require("./_data/metadata.js");
-const Twitter = require("./src/twitter");
-const EmojiAggregator = require( "./src/EmojiAggregator" );
-const dataSource = require("./src/DataSource");
+const Twitter = require("./dist/twitter");
+const EmojiAggregator = require( "./dist/EmojiAggregator" );
+const dataSource = require("./dist/DataSource");
 
 class Index extends Twitter {
 	data() {

@@ -28,6 +28,12 @@ class TwitterApi {
 		// returns promise
 		return EleventyFetch(this.getUrl(), {
 			duration: cacheDuration || "*",
+			type: "json"
+		});
+	}
+}
+
+module.exports = TwitterApi;
 			type: "json",
 			fetchOptions: {
 				headers: {

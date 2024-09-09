@@ -88,6 +88,9 @@ function logTweetCount() {
 }
 
 module.exports = {
+  getTweets,
+  logTweetCount
+};
   checkInDatabase,
   saveToDatabase,
   saveToDatabaseApiV1,

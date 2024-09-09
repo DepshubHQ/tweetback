@@ -1,4 +1,4 @@
-const dataSource = require("../src/DataSource");
+const dataSource = require("../dist/DataSource");
 const metadata = require("../_data/metadata.js");
 
 module.exports = async function(data) {
@@ -28,6 +28,13 @@ module.exports = async function(data) {
 			<li>${previousHref ? `<a href="${previousHref}">` : ""}⇠ Newer<span class="sr-only"> Tweet</span>${previousHref ? `</a>` : ""}</li>
 			<li>${nextHref ? `<a href="${nextHref}">` : ""}Older<span class="sr-only"> Tweet</span> ⇢${nextHref ? `</a>` : ""}</li>
 		</ul>`;
+	}
+
+	return {
+		title: `${metadata.title} ${titleTweetNumberStr}`,
+		navHtml: navHtml
+	};
+};
 	}
 
 	let meta_description = `A read-only indieweb self-hosted archive of${ data.pagination && data.pagination.hrefs && data.pagination.hrefs.length ? ` all ${data.pagination.hrefs.length} of` : ""} ${data.metadata.username}’s tweets.`;

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { checkInDatabase, logTweetCount, saveToDatabaseApiV1, createTable } = require("./tweet-to-db");
+const { checkInDatabase, logTweetCount, saveToDatabaseApiV1, createTable } = require("./dist/tweet-to-db");
 const shouldFilterOutCircleTweets = process.argv.includes('removecircletweets');
 const tweets = require("./tweets.js");
 let circleTweets;
@@ -30,6 +30,19 @@ async function retrieveTweets() {
 			} else {
 				missingTweets++;
 				saveToDatabaseApiV1(tweet);
+			}
+		});
+	}
+	console.log( `Found ${existingRecordsFound} existing records in the database.` );
+	console.log( `Found ${missingTweets} missing records in the database.` );
+	console.log( `Found ${circleTweets} circle tweets in the database.` );
+}
+
+createTable().then(() => {
+	retrieveTweets();
+});
+				missingTweets++;
+				saveToDatabaseApiV1(tweet);
 				// console.log( "Missing tweet", { tweet });
 				console.log( {existingRecordsFound, missingTweets} );
 				logTweetCount();
@@ -47,4 +60,3 @@ async function retrieveTweets() {
 		console.log( "ERROR", e );
 	}
 })();
-
