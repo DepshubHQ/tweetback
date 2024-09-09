@@ -28,6 +28,85 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 			// "referenced_tweets.id.author_id",
 			// "entities.mentions.username",
 		].join(","),
+		"tweet.fields": [
+			"created_at",
+			"author_id",
+			"conversation_id",
+			"in_reply_to_user_id",
+			"public_metrics",
+			"text",
+			"lang",
+			"entities",
+			"referenced_tweets",
+			"attachments",
+		].join(","),
+		"user.fields": [
+			"id",
+			"name",
+			"username",
+			"created_at",
+			"description",
+			"public_metrics",
+			"location",
+			"profile_image_url",
+			"protected",
+			"verified",
+			"url",
+			"pinned_tweet_id",
+		].join(","),
+		"media.fields": [
+			"url",
+			"preview_image_url",
+			"type",
+			"media_key",
+		].join(","),
+		"max_id": maxId,
+	};
+	requestCount++;
+	try {
+		const response = await client.get( "tweets/search/recent", params );
+		if ( response.data.meta.result_count === 0 ) {
+			console.log( "No more tweets found." );
+			return;
+		}
+		const tweets = response.data.data;
+		const users = response.data.includes.users;
+		const media = response.data.includes.media;
+		for ( let i = 0; i < tweets.length; i++ ) {
+			const tweet = tweets[ i ];
+			const user = users.find( user => user.id === tweet.author_id );
+			const mediaKeys = tweet.attachments?.media_keys;
+			const mediaUrls = mediaKeys ? mediaKeys.map( mediaKey => media.find( mediaItem => mediaItem.media_key === mediaKey ).url ) : [];
+			const existingRecord = await checkInDatabase( tweet.id );
+			if ( existingRecord ) {
+				existingRecordsFound++;
+				console.log( "Tweet already exists in database:", tweet.id );
+				if ( existingRecordsFound >= STOP_FETCH_AT_EXISTING_RECORD_COUNT ) {
+					console.log( "Reached the limit of existing records found. Stopping the fetch." );
+					return;
+				}
+			} else {
+				await saveToDatabase( tweet, user, mediaUrls );
+				console.log( "Tweet saved to database:", tweet.id );
+			}
+		}
+		if ( response.data.meta.next_token ) {
+			await retrieveTweets( response.data.meta.next_token, existingRecordsFound );
+		}
+	} catch ( error ) {
+		console.error( "Error fetching tweets:", error );
+	}
+}
+
+async function main() {
+	const userId = await TwitterApiFetchUserId( metadata.twitter.username );
+	console.log( "User ID:", userId );
+	await retrieveTweets( null );
+	logTweetCount();
+	console.log( "Total requests:", requestCount );
+}
+
+main();
 		"media.fields": [
 			"width",
 			"height",
@@ -115,4 +194,3 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 		console.log( "ERROR", e );
 	}
 })();
-
