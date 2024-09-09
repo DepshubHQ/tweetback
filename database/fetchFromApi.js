@@ -3,7 +3,7 @@ require('dotenv').config();
 const Twitter = require( "twitter-lite" );
 const { TwitterApiFetchUserId } = require("./twitter-api.js");
 const { checkInDatabase, saveToDatabase, logTweetCount } = require("./tweet-to-db");
-const metadata = require("../_data/metadata.js")
+const metadata = require("../dist/metadata.js")
 
 const RESULTS_PER_PAGE = 100;
 const STOP_FETCH_AT_EXISTING_RECORD_COUNT = 200;
@@ -115,4 +115,3 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 		console.log( "ERROR", e );
 	}
 })();
-

@@ -1,4 +1,4 @@
-const Twitter = require("./src/twitter");
+const Twitter = require("./dist/twitter");
 
 class Index extends Twitter {
 	data() {
