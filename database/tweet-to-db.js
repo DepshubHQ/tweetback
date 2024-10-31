@@ -12,7 +12,7 @@ function createTable() {
 function checkInDatabase(tweet) {
   // save tweet to db
   return new Promise(function(resolve, reject) {
-    db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: tweet.id }, function(err, row) {
+    db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: tweet.id_str }, function(err, row) {
       if(err) {
         reject(`Error on .get() ${err}`);
       } else if(row) {
@@ -77,7 +77,7 @@ function saveToDatabase( tweet, users, mediaObjects ) {
   }
 
   let stmt = db.prepare("INSERT INTO tweets VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-  stmt.run(tweet.id, getDateString(tweet.created_at), replyTweetId, replyScreenName, tweet.text, JSON.stringify(tweet), API_VERSION, "");
+  stmt.run(tweet.id_str, getDateString(tweet.created_at), replyTweetId, replyScreenName, tweet.text, JSON.stringify(tweet), API_VERSION, "");
   stmt.finalize();
 }
 
