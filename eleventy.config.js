@@ -1,6 +1,11 @@
 const numeral = require("numeral");
-const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
+const { EleventyHtmlBasePlugin } = await import("@11ty/eleventy");
 const { execSync } = require('child_process')
+const { EleventyPugPlugin } = await import("@11ty/eleventy-plugin-pug");
+const { EleventyEjsPlugin } = await import("@11ty/eleventy-plugin-ejs");
+const { EleventyHamlPlugin } = await import("@11ty/eleventy-plugin-haml");
+const { EleventyMustachePlugin } = await import("@11ty/eleventy-plugin-mustache");
+const { EleventyHandlebarsPlugin } = await import("@11ty/eleventy-plugin-handlebars");
 
 module.exports = function(eleventyConfig) {
 	eleventyConfig.ignores.add("README.md");
@@ -29,11 +34,16 @@ module.exports = function(eleventyConfig) {
 		return numeral(num).format("0,0");
 	});
 
-	eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
+	if (!process.argv.includes('--config=')) {
+		throw new Error('Missing required --config= command line argument');
+	}
 
 	// pagefind search plugin
 	eleventyConfig.on('eleventy.after', () => {
 		console.log('[pagefind] Creating search index.');
 		execSync(`npx pagefind --source _site --glob \"[0-9]*/**/*.html\"`, { encoding: 'utf-8' });
-  });
+	});
+
+	eleventyConfig.setTemplateFormats("html,pug,ejs,haml,mustache,handlebars");
+	eleventyConfig.setPermalink("raw");
 };

@@ -1,5 +1,6 @@
 const Twitter = require("./src/twitter");
 const dataSource = require("./src/DataSource");
+const Eleventy = await import("@11ty/eleventy");
 
 class Popular extends Twitter {
 	data() {

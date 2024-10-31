@@ -8,6 +8,10 @@ const metadata = require("../_data/metadata.js")
 const RESULTS_PER_PAGE = 100;
 const STOP_FETCH_AT_EXISTING_RECORD_COUNT = 200;
 
+if (!process.argv.includes('--config=')) {
+	throw new Error('--config= command line file is missing');
+}
+
 const client = new Twitter({
 	version: "2",
 	extension: false,
@@ -24,9 +28,6 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 		expansions: [
 			"in_reply_to_user_id",
 			"attachments.media_keys",
-			// "referenced_tweets.id",
-			// "referenced_tweets.id.author_id",
-			// "entities.mentions.username",
 		].join(","),
 		"media.fields": [
 			"width",
@@ -35,14 +36,10 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 			"type",
 			"preview_image_url",
 			"url",
-			// "non_public_metrics",
-			// "organic_metrics",
-			// "promoted_metrics",
 		].join(","),
 		"tweet.fields": [
 			"attachments",
 			"author_id",
-			// "context_annotations",
 			"conversation_id",
 			"created_at",
 			"entities",
@@ -50,9 +47,6 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 			"in_reply_to_user_id",
 			"lang",
 			"public_metrics",
-			// "non_public_metrics",
-			// "organic_metrics",
-			// "promoted_metrics",
 			"possibly_sensitive",
 			"referenced_tweets",
 			"reply_settings",
@@ -82,7 +76,6 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 	let media = results.includes.media;
 
 	console.log( `${tweets.length} tweets found.` );
-	// console.log( JSON.stringify(tweets, null, 2) );
 
 	let promises = [];
 	for(let tweet of tweets ) {
@@ -115,4 +108,3 @@ async function retrieveTweets( maxId, existingRecordsFound = 0 ) {
 		console.log( "ERROR", e );
 	}
 })();
-

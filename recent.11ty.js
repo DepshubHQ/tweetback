@@ -4,7 +4,11 @@ const dataSource = require("./src/DataSource");
 class Recent extends Twitter {
 	data() {
 		return {
-			layout: "layout.11ty.js"
+			layout: "layout.11ty.js",
+			activeFormats: ["*"], // Added this line to declare the custom template in active formats
+			compileOptions: {
+				permalink: "raw" // Changed from true to "raw"
+			}
 		};
 	}
 

@@ -1,7 +1,12 @@
 const dataSource = require("../src/DataSource");
 const metadata = require("../_data/metadata.js");
+const fs = require("fs");
 
 module.exports = async function(data) {
+	if (!process.argv.includes("--config=")) {
+		throw new Error("--config= command line file is missing");
+	}
+
 	let titleTweetNumberStr = "";
 	if(data.page.fileSlug === "tweet-pages") {
 		titleTweetNumberStr = `—№ ${this.renderNumber(data.pagination.hrefs.length - data.pagination.pageNumber)}`;

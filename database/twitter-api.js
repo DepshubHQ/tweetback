@@ -1,5 +1,4 @@
-// TODO migrate from twitter-lite to use this @11ty/eleventy-fetch based service
-const EleventyFetch = require("@11ty/eleventy-fetch");
+const EleventyFetch = await import("@11ty/eleventy-fetch");
 
 require('dotenv').config();
 

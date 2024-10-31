@@ -1,6 +1,13 @@
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./database/tweet.db");
 const getDateString = require( "./getDateString" );
+const fs = require("fs"); // Import fs to check for file existence
+
+const configFilePath = process.argv.find(arg => arg.startsWith("--config="))?.split("=")[1];
+
+if (!configFilePath || !fs.existsSync(configFilePath)) {
+  throw new Error("--config= command line file is missing");
+}
 
 function createTable() {
   db.serialize(() => {

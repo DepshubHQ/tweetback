@@ -1,5 +1,6 @@
 const Twitter = require("./src/twitter");
 const dataSource = require("./src/DataSource");
+const { default: Eleventy } = await import("@11ty/eleventy");
 
 /* This is related to the tweet-pages template so each individual page there doesn’t need an update when the newest tweet url changes */
 class NewestTweet extends Twitter {

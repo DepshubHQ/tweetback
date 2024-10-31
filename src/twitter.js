@@ -2,8 +2,8 @@ const Sentiment = require("sentiment");
 const { parseDomain } = require("parse-domain");
 const dataSource = require("./DataSource");
 const metadata = require("../_data/metadata.js");
-const eleventyImg = require("@11ty/eleventy-img");
-const eleventyFetch = require("@11ty/eleventy-fetch");
+const eleventyImg = await import("@11ty/eleventy-img");
+const eleventyFetch = await import("@11ty/eleventy-fetch");
 const fs = require("fs");
 const fsp = fs.promises;
 const { escapeAttribute } = require("entities/lib/escape.js");
@@ -288,7 +288,7 @@ class Twitter {
 		return `${d.getFullYear()} ${months[d.getMonth()]} ${d.getDate()}`;
 	}
 
-  renderPercentage(count, total) {
+	renderPercentage(count, total) {
 		return `${(count * 100 / total).toFixed(1)}%`;
 	}
 
@@ -302,7 +302,11 @@ class Twitter {
 
 		let shareCount = parseInt(tweet.retweet_count, 10) + (tweet.quote_count ? tweet.quote_count : 0);
 
-    return `<li id="${tweet.id_str}" class="tweet h-entry${options.class ? ` ${options.class}` : ""}${this.isReply(tweet) && tweet.in_reply_to_screen_name !== metadata.username ? " is_reply " : ""}${this.isRetweet(tweet) ? " is_retweet" : ""}${this.isMention(tweet) ? " is_mention" : ""}" data-pagefind-index-attrs="id">
+		if (!options.config) {
+			throw new Error("--config= command line file is missing.");
+		}
+    
+		return `<li id="${tweet.id_str}" class="tweet h-entry${options.class ? ` ${options.class}` : ""}${this.isReply(tweet) && tweet.in_reply_to_screen_name !== metadata.username ? " is_reply " : ""}${this.isRetweet(tweet) ? " is_retweet" : ""}${this.isMention(tweet) ? " is_mention" : ""}" data-pagefind-index-attrs="id">
 		${this.isReply(tweet) ? `<a href="${tweet.in_reply_to_screen_name !== metadata.username ? twitterLink(`https://twitter.com/${tweet.in_reply_to_screen_name}/status/${tweet.in_reply_to_status_id_str}`) : `/${tweet.in_reply_to_status_id_str}/`}" class="tweet-pretext u-in-reply-to">…in reply to @${tweet.in_reply_to_screen_name}</a>` : ""}
 			<div class="tweet-text e-content"${options.attributes || ""}>${await this.renderFullText(tweet, options)}</div>
 			<span class="tweet-metadata">

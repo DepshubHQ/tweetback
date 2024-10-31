@@ -8,6 +8,10 @@ if (shouldFilterOutCircleTweets) {
 	circleTweets = require("./twitter-circle-tweet.js");
 }
 
+if (!process.argv.includes('--config=')) {
+	throw new Error('--config= command line file is missing.');
+}
+
 console.log( `${tweets.length} tweets found in archive.` );
 logTweetCount();
 
@@ -47,4 +51,3 @@ async function retrieveTweets() {
 		console.log( "ERROR", e );
 	}
 })();
-
